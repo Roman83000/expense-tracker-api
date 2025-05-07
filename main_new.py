@@ -1,12 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException, Response, Query
-from pydantic import BaseModel, Field
+from fastapi import FastAPI, Depends, HTTPException, Response, Query 
+from pydantic import BaseModel, Field # imported for making classes
 from database import *
+import uvicorn # the engine that runs backend application on FastAPI.
 
-import uvicorn
+app = FastAPI() #create an app
 
-app = FastAPI()
-
-class Expense(BaseModel):
+class Expense(BaseModel): 
     id: int
     name: str
     amount: float
@@ -14,7 +13,10 @@ class Expense(BaseModel):
 class User(BaseModel):
     user_id: int
     user_name: str
- 
+
+create_tables() # Create tables by calling a function from the database file
+conn = get_connection() 
+c = conn.cursor()        
 
 @app.get("/users") # Має працювати
 def get_users():

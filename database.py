@@ -1,26 +1,30 @@
 import sqlite3
 
-conn = sqlite3.connect('expenses.db')
 
-c = conn.cursor()
+def get_connection():
+    return sqlite3.connect('expenses.db')
 
-# запит нижче виконав
-# c.execute("""CREATE TABLE users (
-#           id INTEGER PRIMARY KEY,
-#           user_name TEXT NOT NULL
-# ) """)
 
-# запит нижче виконав
-# c.execute("""CREATE TABLE expenses (
-#           id INTEGER PRIMARY KEY,
-#           expense_name TEXT NOT NULL,
-#           amount REAL NOT NULL,
-#           user_id INTEGER,
-#           CONSTRAINT fk_user_id
-#           FOREIGN KEY (user_id)
-#           REFERENCES users(id)
-#  )""")
+def create_tables():
+    conn = get_connection()
+    c = conn.cursor()
+    with conn:
+        c.execute("""CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY,
+                user_name TEXT NOT NULL
+        ) """)
 
-conn.commit()
+        c.execute("""CREATE TABLE IF NOT EXISTS expenses (
+                id INTEGER PRIMARY KEY,
+                expense_name TEXT NOT NULL,
+                amount REAL NOT NULL,
+                user_id INTEGER,
+                CONSTRAINT fk_user_id
+                FOREIGN KEY (user_id)
+                REFERENCES users(id)
+        )""")
 
-conn.close()
+        conn.commit()
+        conn.close()
+
+create_tables()
