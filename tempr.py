@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, Response, Query 
 from pydantic import BaseModel, Field # imported for making classes
-from database import *
+from app.database import *
 import uvicorn # the engine that runs backend application on FastAPI.
 
 app = FastAPI() #create an app
