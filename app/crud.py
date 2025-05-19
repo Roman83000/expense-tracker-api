@@ -3,7 +3,7 @@ import app
 from app.database import get_connection 
 
 
-conn = get_connection()
+conn = get_connection()  #зробити ці змінні локальними для кожної функції
 c = conn.cursor()
 
 @app.get("/users")
@@ -71,3 +71,12 @@ def delete_expense(user_id: int, id: int):
         if user and exp:
             c.execute("""DELETE FROM expenses WHERE id = :id AND user_id = :user_id""", {'id': id, 'user_id': user_id})
             return {"detail": "Expense was deleted"}
+        
+
+def get_user_by_email(email):
+    with conn:
+        c.execute("""SELECT * FROM users WHERE email = :email""", {'email': email,})
+        user = c.fetchone()
+        if user:
+            return user
+    raise HTTPException(status_code=404, detail="User not found")
