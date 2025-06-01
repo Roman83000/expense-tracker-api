@@ -1,18 +1,18 @@
-from fastapi import HTTPException
-import app
-from app.database import get_connection 
+from fastapi import APIRouter, HTTPException
 
+from database import get_connection 
 
+router = APIRouter(prefix="/users")
 conn = get_connection()
 c = conn.cursor()
 
-@app.get("/users")
+@router.get("/users")
 def get_users():
     with conn:
         c.execute("SELECT * FROM users") 
         return c.fetchall() 
 
-@app.get("/users/{user_id}/expenses")
+@router.get("/users/{user_id}/expenses")
 def get_expenses(user_id: int):
     with conn:
         c.execute("SELECT * FROM expenses WHERE user_id = :user_id", {'user_id': user_id})
@@ -24,7 +24,7 @@ def get_expenses(user_id: int):
     return exp
 
 
-@app.post("/users/{user_name}")
+@router.post("/users/{user_name}")
 def add_user(user_name: str):
     with conn:
         c.execute("""INSERT INTO users (user_name) VALUES (:user_name)""", {'user_name': user_name})
@@ -34,7 +34,7 @@ def add_user(user_name: str):
 
 
 
-@app.post("/users/{user_id}/expenses/") 
+@router.post("/users/{user_id}/expenses/") 
 def add_expense(user_id: int, amount: float, expense_name: str):
     with conn:
         c.execute("""INSERT INTO expenses (expense_name, amount, user_id) VALUES 
@@ -45,7 +45,7 @@ def add_expense(user_id: int, amount: float, expense_name: str):
    
 
 
-@app.delete("/users/{id}") # має працювати. сам додумався як повністю коректно видалити юзера
+@router.delete("/users/{id}") # має працювати. сам додумався як повністю коректно видалити юзера
 def delete_user(id: int):
     with conn:
         c.execute("""SELECT * FROM users WHERE id = :id""", {'id': id,})
@@ -57,7 +57,7 @@ def delete_user(id: int):
     raise HTTPException(status_code=404, detail="User not found")
         
 
-@app.delete("/users/{user_id}/expenses/{id}") # сам написав!! тільки на помилки перевірив з джипіті
+@router.delete("/users/{user_id}/expenses/{id}") # сам написав!! тільки на помилки перевірив з джипіті
 def delete_expense(user_id: int, id: int):
     with conn:
         c.execute("""SELECT * FROM users WHERE id = :user_id""", {'user_id': user_id,})

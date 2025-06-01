@@ -2,8 +2,8 @@ import sqlite3
 
 
 def get_connection():
-    return sqlite3.connect('expenses.db', check_same_thread=False)
-
+    conn = sqlite3.connect('expenses.db', check_same_thread=False)
+    return conn
 
 def create_tables():
     conn = get_connection()
@@ -23,8 +23,5 @@ def create_tables():
                 FOREIGN KEY (user_id)
                 REFERENCES users(id)
         )""")
-
-        conn.commit()
-        conn.close()
 
 create_tables()
