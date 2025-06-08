@@ -11,7 +11,9 @@ def create_tables():
     with conn:
         c.execute("""CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY,
-                user_name TEXT NOT NULL
+                user_name TEXT NOT NULL,
+                email TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL
         ) """)
 
         c.execute("""CREATE TABLE IF NOT EXISTS expenses (
@@ -21,7 +23,8 @@ def create_tables():
                 user_id INTEGER,
                 CONSTRAINT fk_user_id
                 FOREIGN KEY (user_id)
-                REFERENCES users(id)
+                REFERENCES users(id) 
         )""")
-
+#додати он деліт каскадет (в ескьюельі)
+# почитати про міграцію баз данних
 create_tables()
