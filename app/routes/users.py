@@ -1,46 +1,39 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.database import get_connection
-from app.auth import check_auth, simple_password
-from app.models import UserCreate, UserAuth
+from app.auth import *
+from app.models import UserCreate
 
-router = APIRouter(prefix="/users", tags=['Users'])
+router = APIRouter(tags=['Users'])
 
-@router.get("/") # FastApi dependency 
-def get_users(): #Дописати анотації до кожного ендпоінту
-    conn = get_connection() # має бути в параметрі
+@router.get("/") # work
+def get_users(conn = Depends(get_connection)): #Дописати анотації до кожного ендпоінту
     with conn:
         c = conn.cursor()
-        c.execute("SELECT * FROM users") # має бути лімітована кількість юзерів, яка вертається
-        return c.fetchall() # повертати список моделей User
+        c.execute("""SELECT id, user_name FROM users LIMIT 10""") 
 
+        return c.fetchall()
 # ескьюель транзакції !!!
 
-@router.post("/") 
+@router.post("/") #!!!!!! дає  
 def add_user(user: UserCreate):
     conn = get_connection() 
-    if not check_auth(user.email, user.password):  #fastapi middleware вастапі мідлвеар. винести авторизацію окремо а не в кожен запит
-        password_hash = simple_password(user.password) 
+    if not get_user_by_email(user.email):  #fastapi middleware вастапі мідлвеар. винести авторизацію окремо а не в кожен запит
+        password_hash = hashed_password(user.password) 
         with conn:
             c = conn.cursor()
             c.execute("""INSERT INTO users (user_name, email, password_hash) VALUES (?, ?, ?)""", 
                       (user.user_name, user.email, password_hash))
         
         return {"message": "User added"}
-    return {"message": "Try another login or password"} # має вертати помилку (статускод)
+    raise HTTPException(status_code=401, detail="Unauthorized user") 
 
 
-@router.delete("/delete") 
-def delete_user(user: UserAuth):
+@router.delete("/delete_user") #work
+def delete_user(current_user_id: int = Depends(get_current_user)):
     conn = get_connection()
-    if check_auth(user.email, user.password):
-        password_hash = simple_password(user.password)
-        with conn: # 
-            c = conn.cursor()
-            c.execute("""SELECT id FROM users WHERE email = ? AND password_hash = ? """, (user.email, password_hash))
-            temp_id = c.fetchone() # назвати юзер айді
-            c.execute("""DELETE FROM expenses WHERE user_id = ? """, (temp_id[0],))
-            c.execute("""DELETE FROM users WHERE email = ? AND password_hash = ? """, (user.email, password_hash))
-            return {"detail": "User was deleted"}
-        raise HTTPException(status_code=404, detail="User not found")
-    return {"message": "Try another login or password"} # має вертати помилку (статускод)
-            
+    with conn: 
+        c = conn.cursor()
+        c.execute("""DELETE FROM expenses WHERE user_id = ? """, (current_user_id,))
+        c.execute("""DELETE FROM users WHERE id = ? """, (current_user_id,))
+        return {"detail": "User was deleted"}
+    
