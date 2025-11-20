@@ -14,7 +14,7 @@ def get_users(conn = Depends(get_connection)): #Дописати анотаці�
         return c.fetchall()
 # ескьюель транзакції !!!
 
-@router.post("/") #!!!!!! дає  
+@router.post("/") 
 def add_user(user: UserCreate):
     conn = get_connection() 
     if not get_user_by_email(user.email):  #fastapi middleware вастапі мідлвеар. винести авторизацію окремо а не в кожен запит
