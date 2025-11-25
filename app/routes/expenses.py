@@ -1,17 +1,18 @@
 from fastapi import APIRouter, HTTPException, Depends
 from app.database import get_connection
 from app.auth import *
+from app.models import *
 
-
+# Додати валідацію!
 
 router = APIRouter(tags=['Expenses'])
 
 @router.post("/add") #work
-def add_expense(amount: float, expense_name: str, current_user_id: int = Depends(get_current_user)):
+def add_expense(expense: ExpenseCreate, current_user_id: int = Depends(get_current_user)):
     conn = get_connection()
     with conn:
         c = conn.cursor()
-        c.execute("""INSERT INTO expenses (expense_name, amount, user_id) VALUES (?, ?, ?)""", (expense_name, amount, current_user_id))
+        c.execute("""INSERT INTO expenses (expense_name, amount, user_id, category_id) VALUES (?, ?, ?, ?)""", (expense.expense_name, expense.amount, current_user_id, expense.category_id))
         return {"message": "Expense added"}
 
 
@@ -20,12 +21,13 @@ def get_expenses(сurrent_user_id: int = Depends(get_current_user)):
     conn = get_connection()
     with conn:
         c = conn.cursor()
-        c.execute("""SELECT * FROM expenses WHERE user_id = ?""", (сurrent_user_id,))
+        c.execute("""SELECT expenses.expense_name, expenses.amount, categories.category FROM expenses 
+                  LEFT JOIN categories ON expenses.category_id = categories.id WHERE user_id = ?""", (сurrent_user_id,))
         exp = c.fetchall()
     if not exp:
         raise HTTPException(status_code=404, detail="No expenses found for this user")
     return exp
-
+# Add right Join
 
     
 @router.delete("/delete") #work
