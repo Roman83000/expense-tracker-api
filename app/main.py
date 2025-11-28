@@ -14,4 +14,6 @@ app.include_router(expenses.router)
 
 app.include_router(auth_router)
 
+# Авторизація злітає кожен раз коли перезавантаєую сторінку
+
 #в перспективі зробити авторизацію по кукі чи токєну

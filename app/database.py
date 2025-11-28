@@ -6,44 +6,23 @@ def get_connection():
     conn.execute('PRAGMA foreign_keys = ON;')
     return conn
 
-def create_tables():
-    conn = get_connection()
-    c = conn.cursor()
-    with conn:
-        c.execute("""CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY,
-                user_name TEXT NOT NULL,
-                email TEXT NOT NULL UNIQUE,
-                password_hash TEXT NOT NULL
-        ) """)
-
-        c.execute("""CREATE TABLE IF NOT EXISTS categories (
-                id INTEGER PRIMARY KEY,
-                category TEXT UNIQUE
-        ) """)
-        
-        c.execute("""
-        INSERT OR IGNORE INTO categories (category) VALUES
-            ('Home'),
-            ('Entertainment'),
-            ('Transport'),
-            ('Food'),
-            ('Health');
-        """)
-
-        c.execute("""CREATE TABLE IF NOT EXISTS expenses (
-                id INTEGER PRIMARY KEY,
-                expense_name TEXT NOT NULL,
-                amount REAL NOT NULL,
-                user_id INTEGER,
-                category_id INTEGER,
-                CONSTRAINT fk_user_id
-                FOREIGN KEY (user_id)
-                REFERENCES users(id) ON DELETE CASCADE,
-                CONSTRAINT fk_categ_id
-                FOREIGN KEY (category_id) 
-                REFERENCES categories(id) ON DELETE SET NULL
-        )""")
-        
-# почитати про міграцію баз данних
-create_tables()
+#Змінні для команд (запускати з папки, де знаходиться ./migrate):
+# MIGRATE_BIN=./migrate
+# SOURCE_DIR=file:///Users/roman/workspace/expense_api/app/db/migrations
+# DB_URL=sqlite:///Users/roman/workspace/expense_api/app/expenses.db
+#
+# 1. СТВОРИТИ НОВІ ФАЙЛИ МІГРАЦІЇ:
+#    ./migrate create -ext sql -dir /Users/roman/workspace/expense_api/app/db/migrations -seq add_new_table
+#
+# 2. ЗАСТОСУВАТИ ВСІ МІГРАЦІЇ (КРОК ВПЕРЕД):
+#    $MIGRATE_BIN -source $SOURCE_DIR -database $DB_URL up
+#
+# 3. ВІДКОТИТИ ОСТАННЮ МІГРАЦІЮ (КРОК НАЗАД):
+#    $MIGRATE_BIN -source $SOURCE_DIR -database $DB_URL down 1
+#
+# 4. ВІДКОТИТИ ВСІ МІГРАЦІЇ (ОЧИЩЕННЯ):
+#    $MIGRATE_BIN -source $SOURCE_DIR -database $DB_URL down -all
+#
+# 5. ПОКАЗАТИ ПОТОЧНУ ВЕРСІЮ:
+#    $MIGRATE_BIN -source $SOURCE_DIR -database $DB_URL version
+#

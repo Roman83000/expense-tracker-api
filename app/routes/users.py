@@ -33,7 +33,6 @@ def delete_user(current_user_id: int = Depends(get_current_user)):
     conn = get_connection()
     with conn: 
         c = conn.cursor()
-        c.execute("""DELETE FROM expenses WHERE user_id = ? """, (current_user_id,))
         c.execute("""DELETE FROM users WHERE id = ? """, (current_user_id,))
         return {"detail": "User was deleted"}
     
