@@ -1,5 +1,5 @@
 -- DOWN: Видалення початкових таблиць
 
-DROP TABLE expenses;
-DROP TABLE users;
+IF EXISTS DROP TABLE expenses;
+IF EXISTS DROP TABLE users;
 
