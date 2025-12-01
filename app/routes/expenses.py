@@ -5,7 +5,7 @@ from app.models import *
 
 # Додати валідацію!
 
-def amout_to_cents(amount:float) -> int:
+def amount_to_cents(amount:float) -> int:
     return int(amount * 100)
 
 
@@ -19,7 +19,7 @@ def add_expense(expense: ExpenseCreate, current_user_id: int = Depends(get_curre
     conn = get_connection()
     with conn:
         c = conn.cursor()
-        amount_in_cents = amout_to_cents(expense.amount)
+        amount_in_cents = amount_to_cents(expense.amount)
         c.execute("""INSERT INTO expenses (expense_name, amount, user_id, category_id) VALUES (?, ?, ?, ?)""", (expense.expense_name, amount_in_cents, current_user_id, expense.category_id))
         return {"message": "Expense added"}
 
