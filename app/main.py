@@ -1,11 +1,9 @@
 from fastapi import FastAPI, status, Depends, HTTPException
-
 from app.routes import users, expenses
-from app.database import create_tables
 from typing import Annotated
 from sqlalchemy.orm import Session
 from app.auth import router as auth_router
-create_tables()
+
 
 app = FastAPI()
 
