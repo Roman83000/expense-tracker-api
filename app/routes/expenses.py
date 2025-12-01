@@ -5,6 +5,13 @@ from app.models import *
 
 # Додати валідацію!
 
+def amount_to_cents(amount:float) -> int:
+    return int(amount * 100)
+
+
+def сents_to_float(amount_in_cents:int) -> float:
+    return amount_in_cents / 100.0
+
 router = APIRouter(tags=['Expenses'])
 
 @router.post("/add") #work
@@ -12,7 +19,8 @@ def add_expense(expense: ExpenseCreate, current_user_id: int = Depends(get_curre
     conn = get_connection()
     with conn:
         c = conn.cursor()
-        c.execute("""INSERT INTO expenses (expense_name, amount, user_id, category_id) VALUES (?, ?, ?, ?)""", (expense.expense_name, expense.amount, current_user_id, expense.category_id))
+        amount_in_cents = amount_to_cents(expense.amount)
+        c.execute("""INSERT INTO expenses (expense_name, amount, user_id, category_id) VALUES (?, ?, ?, ?)""", (expense.expense_name, amount_in_cents, current_user_id, expense.category_id))
         return {"message": "Expense added"}
 
 
@@ -26,7 +34,16 @@ def get_expenses(сurrent_user_id: int = Depends(get_current_user)):
         exp = c.fetchall()
     if not exp:
         raise HTTPException(status_code=404, detail="No expenses found for this user")
-    return exp
+    result = []
+    for name, amount_in_cents, category in exp:
+        amount_float = сents_to_float(amount_in_cents) #decimal python ВИНЕСТИ В ФУНКІЮ
+
+        result.append({
+                "expense_name": name,
+                "amount": amount_float,
+                "category": category
+            })    
+    return result
 # Add right Join
 
     
