@@ -9,7 +9,7 @@ def amout_to_cents(amount:float) -> int:
     return int(amount * 100)
 
 
-def amout_to_sents(amount_in_cents:int) -> float:
+def сents_to_float(amount_in_cents:int) -> float:
     return amount_in_cents / 100.0
 
 router = APIRouter(tags=['Expenses'])
@@ -36,7 +36,7 @@ def get_expenses(сurrent_user_id: int = Depends(get_current_user)):
         raise HTTPException(status_code=404, detail="No expenses found for this user")
     result = []
     for name, amount_in_cents, category in exp:
-        amount_float = amout_to_sents(amount_in_cents) #decimal python ВИНЕСТИ В ФУНКІЮ
+        amount_float = сents_to_float(amount_in_cents) #decimal python ВИНЕСТИ В ФУНКІЮ
 
         result.append({
                 "expense_name": name,
