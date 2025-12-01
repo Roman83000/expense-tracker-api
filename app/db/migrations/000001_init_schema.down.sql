@@ -1,5 +1,5 @@
 -- DOWN: Видалення всіх таблиць, створених у початковій міграції
 
-DROP TABLE expenses;
-DROP TABLE categories;
-DROP TABLE users;
+DROP TABLE IF EXISTS expenses;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS users;

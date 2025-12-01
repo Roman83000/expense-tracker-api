@@ -5,6 +5,13 @@ from app.models import *
 
 # Додати валідацію!
 
+def amout_to_cents(amount:float) -> int:
+    return int(amount * 100)
+
+
+def amout_to_sents(amount_in_cents:int) -> float:
+    return amount_in_cents / 100.0
+
 router = APIRouter(tags=['Expenses'])
 
 @router.post("/add") #work
@@ -12,7 +19,7 @@ def add_expense(expense: ExpenseCreate, current_user_id: int = Depends(get_curre
     conn = get_connection()
     with conn:
         c = conn.cursor()
-        amount_in_cents = int(expense.amount * 100)  #decimal python
+        amount_in_cents = amout_to_cents(expense.amount)
         c.execute("""INSERT INTO expenses (expense_name, amount, user_id, category_id) VALUES (?, ?, ?, ?)""", (expense.expense_name, amount_in_cents, current_user_id, expense.category_id))
         return {"message": "Expense added"}
 
@@ -29,7 +36,7 @@ def get_expenses(сurrent_user_id: int = Depends(get_current_user)):
         raise HTTPException(status_code=404, detail="No expenses found for this user")
     result = []
     for name, amount_in_cents, category in exp:
-        amount_float = amount_in_cents / 100.0 #decimal python
+        amount_float = amout_to_sents(amount_in_cents) #decimal python ВИНЕСТИ В ФУНКІЮ
 
         result.append({
                 "expense_name": name,
