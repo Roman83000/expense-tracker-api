@@ -15,8 +15,7 @@ def сents_to_float(amount_in_cents:int) -> float:
 router = APIRouter(tags=['Expenses'])
 
 @router.post("/add") #work
-def add_expense(expense: ExpenseCreate, current_user_id: int = Depends(get_current_user)):
-    conn = get_connection()
+def add_expense(expense: ExpenseCreate, current_user_id: int = Depends(get_current_user), conn = Depends(get_connection)):
     with conn:
         c = conn.cursor()
         amount_in_cents = amount_to_cents(expense.amount)
@@ -25,8 +24,7 @@ def add_expense(expense: ExpenseCreate, current_user_id: int = Depends(get_curre
 
 
 @router.post("/get_expenses") #work
-def get_expenses(сurrent_user_id: int = Depends(get_current_user)):
-    conn = get_connection()
+def get_expenses(сurrent_user_id: int = Depends(get_current_user), conn = Depends(get_connection)):
     with conn:
         c = conn.cursor()
         c.execute("""SELECT expenses.expense_name, expenses.amount, categories.category FROM expenses 
@@ -48,7 +46,7 @@ def get_expenses(сurrent_user_id: int = Depends(get_current_user)):
 
     
 @router.delete("/delete") #work
-def delete_expense(id: int, сurrent_user_id: int = Depends(get_current_user)):
+def delete_expense(id: int, сurrent_user_id: int = Depends(get_current_user), conn = Depends(get_connection)):
     conn = get_connection()
     with conn:
         c = conn.cursor()

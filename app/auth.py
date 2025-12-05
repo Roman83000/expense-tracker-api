@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from app.models import Token
 import bcrypt
 from config import settings
+import sqlite3
 
 # погуглити які проблеми вирішує кукі та дживіті, та сесії в автентифікації.
 # чому у деяких баз даних є окремий процес(сервер) а у деяких ні, в чому різниця різних субд, чому вони існують(йти хронологічно), джойни
@@ -16,7 +17,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 ALGORITHM = "HS256"
 
 def get_user_by_email(email: str):
-    conn = get_connection()
+    conn = sqlite3.connect(settings.DATABASE_URL, check_same_thread=False)
     with conn:
         c = conn.cursor()
         c.execute("""SELECT id, user_name, email, password_hash FROM users WHERE email = ?""", (email,))
