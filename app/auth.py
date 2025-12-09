@@ -6,7 +6,6 @@ from datetime import datetime, timedelta, timezone
 from app.models import Token
 import bcrypt
 from config import settings
-import sqlite3
 
 # погуглити які проблеми вирішує кукі та дживіті, та сесії в автентифікації.
 # чому у деяких баз даних є окремий процес(сервер) а у деяких ні, в чому різниця різних субд, чому вони існують(йти хронологічно), джойни
