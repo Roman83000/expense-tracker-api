@@ -5,7 +5,8 @@ from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
 from app.models import Token
 import bcrypt
-import os
+from config import settings
+
 # погуглити які проблеми вирішує кукі та дживіті, та сесії в автентифікації.
 # чому у деяких баз даних є окремий процес(сервер) а у деяких ні, в чому різниця різних субд, чому вони існують(йти хронологічно), джойни
 # Додати фільтри для витягування витрат, щоб у витрат було більше полів(категорії), щоб можна було додавати різні товари в різні категорії, теги, видаляти
@@ -13,7 +14,6 @@ import os
 router = APIRouter(tags=["Auth"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 ALGORITHM = "HS256"
-SECRET_KEY = os.getenv("SECRET_KEY", "Zalupa")
 
 def get_user_by_email(email: str):
     conn = get_connection()
@@ -30,22 +30,23 @@ def get_user_by_email(email: str):
                 }
         return None
     
+
 @router.post("/token", response_model=Token)
 def login(form_data:OAuth2PasswordRequestForm=Depends()): 
     user = get_user_by_email(form_data.username)
     if not user or not check_auth(form_data.username, form_data.password):
         raise HTTPException(status_code=401, detail="Incorrect email or password")
     token_data = {"sub": str(user["id"])}
-    expire = datetime.now(timezone.utc) + timedelta(minutes=30)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.TOKEN_EXPIRE_MINUTES)
     token_data["exp"] = expire
     
-    token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
+    token = jwt.encode(token_data, settings.SECRET_KEY, algorithm=ALGORITHM)
     return {"access_token":token, "token_type": "bearer"}
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=ALGORITHM)
         user_id: str = payload.get("sub")
         if user_id is None:
             raise HTTPException(status_code=401, detail="Invalid token")
