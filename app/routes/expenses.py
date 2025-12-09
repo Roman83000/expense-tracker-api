@@ -47,7 +47,6 @@ def get_expenses(сurrent_user_id: int = Depends(get_current_user), conn = Depen
     
 @router.delete("/delete") #work
 def delete_expense(id: int, сurrent_user_id: int = Depends(get_current_user), conn = Depends(get_connection)):
-    conn = get_connection()
     with conn:
         c = conn.cursor()
         c.execute("""SELECT * FROM expenses WHERE id = ? """, (id, ))
