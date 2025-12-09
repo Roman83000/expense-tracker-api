@@ -16,7 +16,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 ALGORITHM = "HS256"
 
 def get_user_by_email(email: str):
-    conn = get_connection()
+    conn = sqlite3.connect(settings.DATABASE_URL, check_same_thread=False)
     with conn:
         c = conn.cursor()
         c.execute("""SELECT id, user_name, email, password_hash FROM users WHERE email = ?""", (email,))

@@ -5,4 +5,7 @@ from config import settings
 def get_connection():
     conn = sqlite3.connect(settings.DATABASE_URL, check_same_thread=False)
     conn.execute('PRAGMA foreign_keys = ON;')
-    return conn
+    try:
+        yield conn
+    finally:
+        conn.close()
