@@ -1,7 +1,7 @@
 #Змінні для команд (запускати з папки, де знаходиться ./migrate):
 # MIGRATE_BIN=./migrate
 # SOURCE_DIR=file:///Users/roman/workspace/expense_api/app/db/migrations
-# DB_URL=sqlite:///Users/roman/workspace/expense_api/app/expenses.db
+# DB_URL= sqlite:///Users/roman/workspace/expense_api/app/expenses.db
 #
 # 1. СТВОРИТИ НОВІ ФАЙЛИ МІГРАЦІЇ:
 #    ./migrate create -ext sql -dir /Users/roman/workspace/expense_api/app/db/migrations -seq add_new_table
