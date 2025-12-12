@@ -1,16 +1,20 @@
-MIGRATE_BIN := ./bin/migrate
-SOURCE_DIR := file:///Users/roman/workspace/expense_api/app/db/migrations
-DB_URL := sqlite3:///Users/roman/workspace/expense_api/expenses.db
+# Визначаємо корінь проєкту через поточну директорію Makefile
+PROJECT_DIR := $(shell pwd)
 
-#all: $(MIGRATE_BIN) $(SOURCE_DIR) $(DB_URL)
+MIGRATE_BIN := ./bin/migrate
+# Використовуємо відносний шлях від кореня проєкту
+SOURCE_DIR_RELATIVE := app/db/migrations
+SOURCE_URL := file://$(PROJECT_DIR)/$(SOURCE_DIR_RELATIVE)
+DB_URL := sqlite3://$(PROJECT_DIR)/expenses.db
 
 migrate-create: 
-	$(MIGRATE_BIN) create -ext sql -dir /Users/roman/workspace/expense_api/app/db/migrations -seq add_new_table
+	$(MIGRATE_BIN) create -ext sql -dir $(SOURCE_DIR_RELATIVE) -seq $(NAME)
+
 migrate-up:
-	$(MIGRATE_BIN) -source $(SOURCE_DIR) -database $(DB_URL) up
+	$(MIGRATE_BIN) -source $(SOURCE_URL) -database $(DB_URL) up
 
 migrate-down:
-	$(MIGRATE_BIN) -source $(SOURCE_DIR) -database $(DB_URL) down 1
+	$(MIGRATE_BIN) -source $(SOURCE_URL) -database $(DB_URL) down 1
 
 migrate-reset:
-	$(MIGRATE_BIN) -source $(SOURCE_DIR) -database $(DB_URL) down -all
+	$(MIGRATE_BIN) -source $(SOURCE_URL) -database $(DB_URL) down -all
